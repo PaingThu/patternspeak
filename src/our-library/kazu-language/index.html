@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kazu Japanese Vocabulary Explorer</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!-- Chosen Palette: Warm Neutrals & Muted Sage -->
+<!-- Application Structure Plan: The application is designed as an interactive learning dashboard and study tool. It synthesizes the static vocabulary log into three functional areas: a Progress Dashboard (to visualize learning milestones), a Dictionary Grid (for non-linear exploration and search), and a Flashcard Mode (for focused, linear study). This structure was chosen because vocabulary acquisition relies on both broad exploration (understanding context/usage) and active recall (testing memory). Transforming the static list into a stateful, interactive application significantly enhances user engagement and retention. -->
+<!-- Visualization & Content Choices: Report Info: Vocabulary list and mastery status -> Goal: Show overall progress -> Viz/Presentation Method: Chart.js Doughnut Chart -> Interaction: Updates dynamically when words are marked mastered -> Justification: Provides immediate visual feedback on learning progress, motivating the user -> Library/Method: Chart.js Canvas (NO SVG/Mermaid). Report Info: Vocabulary details (meaning, examples) -> Goal: Enable active recall and deep study -> Viz/Presentation Method: Interactive Flip Cards & Expandable Grid -> Interaction: Click to reveal answers/details -> Justification: Proven pedagogical method for language learning. -->
+<!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+<style>
+body { background-color: #F7F5F2; color: #4A443E; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+.chart-container { position: relative; width: 100%; max-width: 400px; margin-left: auto; margin-right: auto; height: 250px; max-height: 300px; }
+.flashcard-inner { transition: transform 0.6s; transform-style: preserve-3d; }
+.flashcard.flipped .flashcard-inner { transform: rotateY(180deg); }
+.flashcard-front, .flashcard-back { backface-visibility: hidden; position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
+.flashcard-back { transform: rotateY(180deg); overflow-y: auto; }
+.hide-scrollbar::-webkit-scrollbar { display: none; }
+.hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+</style>
+</head>
+<body class="min-h-screen flex flex-col items-center p-4 sm:p-8">
+
+<div class="w-full max-w-6xl mx-auto space-y-12">
+    
+    <header class="text-center space-y-4 pt-8">
+        <h1 class="text-4xl md:text-5xl font-extrabold text-[#3D3833] tracking-tight">Kazu Vocabulary Explorer</h1>
+        <p class="text-lg text-[#6B635A] max-w-2xl mx-auto">An interactive synthesis of your Japanese language journey. Explore terms, study actively, and track your mastery progress dynamically.</p>
+    </header>
+
+    <section class="bg-white rounded-3xl shadow-sm border border-[#EBE6E0] p-6 md:p-10">
+        <div class="mb-6">
+            <h2 class="text-2xl font-bold text-[#3D3833] mb-2">Learning Analytics Dashboard</h2>
+            <p class="text-[#6B635A]">This section translates your vocabulary list into actionable data. Track your overall acquisition progress. As you interact with the vocabulary cards below and mark them as "Mastered", this chart will dynamically update to reflect your growing proficiency.</p>
+        </div>
+        <div class="flex flex-col md:flex-row items-center justify-center gap-8">
+            <div class="w-full md:w-1/2 flex justify-center">
+                <div class="chart-container">
+                    <canvas id="progressChart"></canvas>
+                </div>
+            </div>
+            <div class="w-full md:w-1/2 space-y-4 text-center md:text-left">
+                <div class="p-6 bg-[#F7F5F2] rounded-2xl border border-[#EBE6E0]">
+                    <div class="text-4xl font-black text-[#5C7256]" id="masteredCount">0</div>
+                    <div class="text-sm font-semibold text-[#8C847A] uppercase tracking-wider mt-1">Words Mastered</div>
+                </div>
+                <div class="p-6 bg-[#F7F5F2] rounded-2xl border border-[#EBE6E0]">
+                    <div class="text-4xl font-black text-[#B87A63]" id="learningCount">28</div>
+                    <div class="text-sm font-semibold text-[#8C847A] uppercase tracking-wider mt-1">Words in Progress</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="space-y-6">
+        <div class="mb-2">
+            <h2 class="text-2xl font-bold text-[#3D3833] mb-2">Interactive Study Center</h2>
+            <p class="text-[#6B635A]">Explore the core vocabulary from the source report. Use the Grid View for quick reference and search, or switch to Flashcard View for focused active recall testing. Toggle the mastery status to update your analytics dashboard.</p>
+        </div>
+
+        <div class="flex flex-col sm:flex-row justify-between items-center gap-4 bg-white p-4 rounded-2xl shadow-sm border border-[#EBE6E0] sticky top-4 z-50">
+            <div class="relative w-full sm:w-96">
+                <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-[#8C847A] text-xl">&#128269;</span>
+                <input type="text" id="searchInput" placeholder="Search by Japanese, Romaji, or English..." class="w-full pl-10 pr-4 py-3 bg-[#F7F5F2] border-none rounded-xl focus:ring-2 focus:ring-[#5C7256] outline-none text-[#4A443E] transition-all">
+            </div>
+            <div class="flex gap-2 w-full sm:w-auto bg-[#F7F5F2] p-1 rounded-xl border border-[#EBE6E0]">
+                <button id="btnGrid" class="flex-1 sm:flex-none px-6 py-2 rounded-lg bg-white shadow-sm font-bold text-[#3D3833] transition-all">Grid View</button>
+                <button id="btnFlash" class="flex-1 sm:flex-none px-6 py-2 rounded-lg text-[#8C847A] font-bold hover:bg-[#EBE6E0] transition-all">Flashcards</button>
+            </div>
+        </div>
+
+        <div id="gridView" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+
+        <div id="flashcardView" class="hidden flex-col items-center w-full max-w-2xl mx-auto">
+            <div class="text-[#8C847A] font-bold mb-4 tracking-widest uppercase text-sm" id="flashcardProgress">Card 1 of 28</div>
+            <div id="flashcardContainer" class="flashcard w-full aspect-[4/3] cursor-pointer perspective-1000">
+                <div class="flashcard-inner relative w-full h-full rounded-3xl shadow-md border border-[#EBE6E0]">
+                    <div class="flashcard-front bg-white rounded-3xl p-8 flex flex-col items-center justify-center text-center shadow-inner">
+                        <div class="text-6xl font-black text-[#3D3833] mb-4" id="fc-kanji"></div>
+                        <div class="text-2xl text-[#8C847A] font-medium" id="fc-hiragana"></div>
+                        <div class="mt-8 text-sm text-[#B87A63] font-bold uppercase tracking-widest">&#128260; Click to flip</div>
+                    </div>
+                    <div class="flashcard-back bg-[#5C7256] text-white rounded-3xl p-8 flex flex-col shadow-inner hide-scrollbar">
+                        <h3 class="text-2xl font-bold border-b border-white/20 pb-4 mb-4" id="fc-meaning"></h3>
+                        <div class="text-white/90 text-sm font-medium mb-6 italic" id="fc-notes"></div>
+                        <div class="flex-1 space-y-4 text-left" id="fc-examples"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="flex gap-4 mt-8 w-full">
+                <button id="btnPrev" class="flex-1 py-4 bg-white border border-[#EBE6E0] rounded-2xl font-bold text-[#4A443E] hover:bg-[#F7F5F2] transition-all shadow-sm">&#8592; Previous</button>
+                <button id="btnToggleMasteryFc" class="flex-1 py-4 bg-[#B87A63] rounded-2xl font-bold text-white hover:opacity-90 transition-all shadow-sm">Mark Mastered</button>
+                <button id="btnNext" class="flex-1 py-4 bg-white border border-[#EBE6E0] rounded-2xl font-bold text-[#4A443E] hover:bg-[#F7F5F2] transition-all shadow-sm">Next &#8594;</button>
+            </div>
+        </div>
+    </section>
+
+</div>
+
+<script>
+const vocabData = [
+    { id: 1, word: "挫折", reading: "ざせつ", romaji: "zasetsu", meaning: "Setback, breakdown, frustration, giving up, or failure.", notes: "挫折する (to suffer a setback).", examples: [{ j: "彼は途中で計画を挫折した。", h: "かれは とちゅうで けいかくを ざせつした。", e: "He gave up on the plan halfway through." }] },
+    { id: 2, word: "刷り込む", reading: "すりこむ", romaji: "surikomu", meaning: "To imprint, to instill, to drill into one's mind.", notes: "Used for psychological imprinting.", examples: [{ j: "毎日繰り返して、英単語を脳に刷り込む。", h: "まいにち くりかえして, えいたんごを のうに すりこむ。", e: "I repeat English words every day to imprint them into my brain." }] },
+    { id: 3, word: "半ば諦める", reading: "なかばあきらめる", romaji: "nakaba akirameru", meaning: "To half-give up, to be partially resigned to.", notes: "Describes expecting failure.", examples: [{ j: "合格は無理だと半ば諦めていたが、結果は合格だった。", h: "ごうかくは むりだと なかば あきらめていたが, けっかは ごうかくだった。", e: "I had half-given up, but I passed." }] },
+    { id: 4, word: "工夫", reading: "くふう", romaji: "kufū", meaning: "Resourcefulness, ingenuity, finding a better method.", notes: "To work out a method creatively.", examples: [{ j: "安くて美味しい料理を作るために、いろいろ工夫している。", h: "やすくて おいしい りょうりを つくるために, いろいろ くふうしている。", e: "I am using various creative methods to make cheap and delicious food." }] },
+    { id: 5, word: "育ち", reading: "そだち", romaji: "sodachi", meaning: "Upbringing, environment; growth.", notes: "育ちが良い (well-bred).", examples: [{ j: "彼女は言葉遣いが丁寧で、育ちの良さが感じられる。", h: "かのじょは ことばづかいが ていねいで, そだちの よさが かんじられる。", e: "Her language is very polite, and you can sense her good upbringing." }] },
+    { id: 6, word: "実体験", reading: "じったいけん", romaji: "jittaiken", meaning: "Actual experience, real-life experience.", notes: "Based on personal experience.", examples: [{ j: "私は自分の実体験に基づいて話をしたい。", h: "わたしは じぶんの じったいけんに もとづいて はなしを したい。", e: "I want to speak based on my own actual experience." }] },
+    { id: 7, word: "断言", reading: "だんげん", romaji: "dangen", meaning: "Assertion, declaration, state positively.", notes: "To say clearly with confidence.", examples: [{ j: "彼は「絶対に成功する」と断言した。", h: "かれは 「ぜったいに せいこうする」と だんげんした。", e: "He asserted that 'it will definitely succeed'." }] },
+    { id: 8, word: "捉える", reading: "とらえる", romaji: "toraeru", meaning: "To catch, capture, or seize; to grasp meaning.", notes: "Used for abstract understanding.", examples: [{ j: "彼の言葉を冗談だと捉えた。", h: "かれの ことばを じょうだんだと とらえた。", e: "I perceived his words as a joke." }] },
+    { id: 9, word: "不思議", reading: "ふしぎ", romaji: "fushigi", meaning: "Mysterious, wonderful, strange, odd.", notes: "Noun or na-adjective.", examples: [{ j: "彼がまだ来ないのは不思議だ。", h: "かれが まだ こないのは ふしぎだ。", e: "It is strange that he hasn't come yet." }] },
+    { id: 10, word: "ある時", reading: "あるとき", romaji: "arutoki", meaning: "Once, at one time, on one occasion.", notes: "introduces a story.", examples: [{ j: "ある時、森の中で不思議な鳥を見つけた。", h: "あるとき, もりのなかで ふしぎな とりを みつけた。", e: "Once, I found a mysterious bird in the forest." }] },
+    { id: 11, word: "不思議なことに", reading: "ふしぎなことに", romaji: "fushigi na koto ni", meaning: "Strangely enough, curiously, mysteriously.", notes: "Adverbial phrase.", examples: [{ j: "不思議なことに、練習すればするほど疲れを感じなくなった。", h: "ふしぎな ことに, れんしゅう すれば するほど つかれを かんじなくなった。", e: "Strangely enough, the more I practiced, the less tired I felt." }] },
+    { id: 12, word: "関心", reading: "かんしん", romaji: "kanshin", meaning: "Interest, concern.", notes: "Directing attention towards something.", examples: [{ j: "私は政治にあまり関心がない。", h: "わたしは せいじに あまり かんしんが ない。", e: "I don't have much interest in politics." }] },
+    { id: 13, word: "振り返ってみる", reading: "ふりかえってみる", romaji: "furikaette miru", meaning: "To look back; to reflect on the past.", notes: "Metaphorically used.", examples: [{ j: "たまには自分の過去を振り返ってみることも大切だ。", h: "たまには じぶんの かこを ふりかえってみる ことも たいせつだ。", e: "It is important to look back on your own past once in a while." }] },
+    { id: 14, word: "役立つ", reading: "やくだつ", romaji: "yakudatsu", meaning: "To be useful, to be helpful.", notes: "Often used as 「役に立つ」.", examples: [{ j: "この本は日本語の勉強にとても役立つ。", h: "この ほんは にほんごの べんきょうに とても やくだつ。", e: "This book is very useful for studying Japanese." }] },
+    { id: 15, word: "ひたすら", reading: "ひたすら", romaji: "hitasura", meaning: "Intently, single-mindedly, earnestly.", notes: "Emphasizes intensity.", examples: [{ j: "彼はひたすら勉強に励んでいる。", h: "かれは ひたすら べんきょうに はげんでいる。", e: "He is single-mindedly devoting himself to his studies." }] },
+    { id: 16, word: "身につかなかった", reading: "みにつかなかった", romaji: "mi ni tsukanakatta", meaning: "Did not acquire (a skill).", notes: "Failed mastery.", examples: [{ j: "三年間英語を勉強したが、結局身につかなかった。", h: "さんねんかん えいごを べんきょうしたが, けっきょく みにつかなかった。", e: "I studied English for three years, but in the end, I didn't acquire it." }] },
+    { id: 17, word: "取り組んでみる", reading: "とりくんでみる", romaji: "torikunde miru", meaning: "To tackle, work on; give it a try.", notes: "Used for challenges.", examples: [{ j: "難しい問題だが、まずは全力で取り組んでみる。", h: "むずかしい もんだいだが, まずは ぜんりょくで とりくんでみる。", e: "It’s a difficult problem, but first I’ll try tackling it with all my might." }] },
+    { id: 18, word: "自在に", reading: "じざいに", romaji: "jizai ni", meaning: "Freely, at will, with ease.", notes: "Describes perfect control.", examples: [{ j: "彼は三か国語を自在に操る。", h: "かれは さんかこくごを じざいに あやつる。", e: "He handles three languages with ease." }] },
+    { id: 19, word: "一心", reading: "いっしん", romaji: "isshin", meaning: "One heart, single-mindedness.", notes: "Used for intense focus.", examples: [{ j: "彼は一心の思いで練習に励んだ。", h: "かれは いっしんの おもいで れんしゅうに はげんだ。", e: "He devoted himself to practice with all his heart." }] },
+    { id: 20, word: "道のり", reading: "みちのり", romaji: "michinori", meaning: "Distance, path; steps toward a goal.", notes: "Metaphorical progress.", examples: [{ j: "駅までの道のりは意外と遠かった。", h: "えきまでの みちのりは いがいと とおかった。", e: "The distance to the station was unexpectedly long." }] },
+    { id: 21, word: "ワクワク", reading: "わくわく", romaji: "wakuwaku", meaning: "Excited, thrilled, heart-pounding.", notes: "Anticipation/joy.", examples: [{ j: "遠足の前日はワクワクして眠れなかった。", h: "えんそくの ぜんじつは わくわくして ねむれなかった。", e: "I was so excited the day before the field trip that I couldn't sleep." }] },
+    { id: 22, word: "満ちたもの", reading: "みちたもの", romaji: "michita mono", meaning: "Something full of..., filled with...", notes: "[Noun] + に + 満ちたもの.", examples: [{ j: "彼の目は自信に満ちたものだった。", h: "かれは じしんに みちた ものだった。", e: "His eyes were full of confidence." }] },
+    { id: 23, word: "決して〜ない", reading: "けっして〜ない", romaji: "kesshite... nai", meaning: "Never, by no means.", notes: "Emphasizes negative statements.", examples: [{ j: "私は決して諦めない。", h: "わたしは けっして あきらめない。", e: "I will never give up." }] },
+    { id: 24, word: "語学の達人", reading: "ごがくのたつじん", romaji: "gogaku no tatsujin", meaning: "A language master, linguistic expert.", notes: "Exceptional skill level.", examples: [{ j: "彼は5か国語を操る語学の達人だ。", h: "かれは ごかこくごを あやつる ごがくの たつじんだ。", e: "He is a language master who handles five languages." }] },
+    { id: 25, word: "天才的な", reading: "てんさいてきな", romaji: "tensaiteki na", meaning: "Genius-like, ingenious, gifted.", notes: "Extraordinary brilliance.", examples: [{ j: "彼は天才的な数学者として知られている。", h: "かれは てんさいてきな すうがくしゃとして しられている。", e: "He is known as a genius-like mathematician." }] },
+    { id: 26, word: "独学", reading: "どくがく", romaji: "dokugaku", meaning: "Self-study, learning by oneself.", notes: "Teaching oneself.", examples: [{ j: "私は独学で日本語をマスターした。", h: "わたしは どくがくで にほんごを ますたーした。", e: "I mastered Japanese through self-study." }] },
+    { id: 27, word: "効率的に", reading: "こうりつてきに", romaji: "kōritsuteki ni", meaning: "Efficiently.", notes: "Producing best results with least waste.", examples: [{ j: "時間を効率的に使うことが大切だ。", h: "じかんを こうりつてきに つかうことが たいせつだ。", e: "It is important to use time efficiently." }] },
+    { id: 28, word: "コツ", reading: "こつ", romaji: "kotsu", meaning: "Knack, trick, tip, secret.", notes: "Used for acquiring a skill efficiently.", examples: [{ j: "語学学習を効率的に進めるコツ。", h: "ごがくがくしゅうを こうりつてきに すすめる こつ。", e: "Tips for progressing language learning efficiently." }] }
+];
+
+let masteredIds = new Set();
+let currentFlashcardIndex = 0;
+let progressChartInstance = null;
+
+const elGridView = document.getElementById('gridView');
+const elFlashcardView = document.getElementById('flashcardView');
+const searchInput = document.getElementById('searchInput');
+const btnGrid = document.getElementById('btnGrid');
+const btnFlash = document.getElementById('btnFlash');
+const fcContainer = document.getElementById('flashcardContainer');
+
+function init() {
+    renderGrid(vocabData);
+    initChart();
+    updateFlashcard();
+    attachListeners();
+}
+
+function attachListeners() {
+    searchInput.addEventListener('input', (e) => {
+        const term = e.target.value.toLowerCase();
+        const filtered = vocabData.filter(v => 
+            v.word.toLowerCase().includes(term) || 
+            v.romaji.toLowerCase().includes(term) || 
+            v.meaning.toLowerCase().includes(term) ||
+            v.reading.toLowerCase().includes(term)
+        );
+        renderGrid(filtered);
+    });
+
+    btnGrid.addEventListener('click', () => {
+        elGridView.classList.remove('hidden');
+        elFlashcardView.classList.add('hidden');
+        elFlashcardView.classList.remove('flex');
+        btnGrid.classList.add('bg-white', 'shadow-sm', 'text-[#3D3833]');
+        btnGrid.classList.remove('text-[#8C847A]', 'hover:bg-[#EBE6E0]');
+        btnFlash.classList.add('text-[#8C847A]', 'hover:bg-[#EBE6E0]');
+        btnFlash.classList.remove('bg-white', 'shadow-sm', 'text-[#3D3833]');
+    });
+
+    btnFlash.addEventListener('click', () => {
+        elGridView.classList.add('hidden');
+        elFlashcardView.classList.remove('hidden');
+        elFlashcardView.classList.add('flex');
+        btnFlash.classList.add('bg-white', 'shadow-sm', 'text-[#3D3833]');
+        btnFlash.classList.remove('text-[#8C847A]', 'hover:bg-[#EBE6E0]');
+        btnGrid.classList.add('text-[#8C847A]', 'hover:bg-[#EBE6E0]');
+        btnGrid.classList.remove('bg-white', 'shadow-sm', 'text-[#3D3833]');
+    });
+
+    fcContainer.addEventListener('click', () => {
+        fcContainer.classList.toggle('flipped');
+    });
+
+    document.getElementById('btnPrev').addEventListener('click', () => {
+        if(currentFlashcardIndex > 0) {
+            currentFlashcardIndex--;
+            fcContainer.classList.remove('flipped');
+            setTimeout(updateFlashcard, 150);
+        }
+    });
+
+    document.getElementById('btnNext').addEventListener('click', () => {
+        if(currentFlashcardIndex < vocabData.length - 1) {
+            currentFlashcardIndex++;
+            fcContainer.classList.remove('flipped');
+            setTimeout(updateFlashcard, 150);
+        }
+    });
+
+    document.getElementById('btnToggleMasteryFc').addEventListener('click', (e) => {
+        e.stopPropagation();
+        toggleMastery(vocabData[currentFlashcardIndex].id);
+        updateFlashcard();
+    });
+}
+
+function toggleMastery(id) {
+    if(masteredIds.has(id)) {
+        masteredIds.delete(id);
+    } else {
+        masteredIds.add(id);
+    }
+    updateDashboard();
+    renderGrid(vocabData.filter(v => {
+        const term = searchInput.value.toLowerCase();
+        if(!term) return true;
+        return v.word.toLowerCase().includes(term) || v.romaji.toLowerCase().includes(term) || v.meaning.toLowerCase().includes(term);
+    }));
+}
+
+function updateDashboard() {
+    const mastered = masteredIds.size;
+    const learning = vocabData.length - mastered;
+    document.getElementById('masteredCount').innerText = mastered;
+    document.getElementById('learningCount').innerText = learning;
+    
+    if(progressChartInstance) {
+        progressChartInstance.data.datasets[0].data = [mastered, learning];
+        progressChartInstance.update();
+    }
+}
+
+function initChart() {
+    const ctx = document.getElementById('progressChart').getContext('2d');
+    progressChartInstance = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Mastered', 'In Progress'],
+            datasets: [{
+                data: [0, vocabData.length],
+                backgroundColor: ['#5C7256', '#D6D1CA'],
+                borderWidth: 0,
+                hoverOffset: 4
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            cutout: '75%',
+            plugins: {
+                legend: { position: 'bottom', labels: { font: { family: "'Segoe UI', sans-serif", size: 14 }, color: '#6B635A', padding: 20 } },
+                tooltip: { backgroundColor: '#4A443E', padding: 12, cornerRadius: 8, titleFont: { size: 14 }, bodyFont: { size: 14 } }
+            }
+        }
+    });
+}
+
+function renderGrid(data) {
+    elGridView.innerHTML = '';
+    if(data.length === 0) {
+        elGridView.innerHTML = '<div class="col-span-full text-center text-[#8C847A] py-12">No vocabulary found matching your search.</div>';
+        return;
+    }
+    data.forEach(item => {
+        const isMastered = masteredIds.has(item.id);
+        const card = document.createElement('div');
+        card.className = `bg-white p-6 rounded-2xl shadow-sm border transition-all hover:shadow-md flex flex-col h-full ${isMastered ? 'border-[#5C7256]' : 'border-[#EBE6E0]'}`;
+        
+        card.innerHTML = `
+            <div class="flex justify-between items-start mb-4">
+                <div>
+                    <h3 class="text-3xl font-bold text-[#3D3833]">${item.word}</h3>
+                    <p class="text-sm text-[#8C847A] mt-1">${item.reading} &bull; ${item.romaji}</p>
+                </div>
+                <button onclick="toggleMastery(${item.id})" class="text-2xl transition-all focus:outline-none ${isMastered ? 'text-[#5C7256]' : 'text-[#D6D1CA] hover:text-[#B87A63]'}">
+                    ${isMastered ? '&#10004;' : '&#9711;'}
+                </button>
+            </div>
+            <p class="text-[#4A443E] font-medium mb-4 flex-1">${item.meaning}</p>
+            <div class="border-t border-[#EBE6E0] pt-4 mt-auto">
+                <p class="text-sm text-[#8C847A] mb-2 border-l-2 border-[#B87A63] pl-2">${item.notes}</p>
+                <div class="bg-[#F7F5F2] rounded-lg p-3 text-sm">
+                    <p class="text-[#3D3833] font-bold">${item.examples[0].j}</p>
+                    <p class="text-[#8C847A] mt-1">${item.examples[0].e}</p>
+                </div>
+            </div>
+        `;
+        elGridView.appendChild(card);
+    });
+}
+
+function updateFlashcard() {
+    const item = vocabData[currentFlashcardIndex];
+    const isMastered = masteredIds.has(item.id);
+    
+    document.getElementById('flashcardProgress').innerText = `Card ${currentFlashcardIndex + 1} of ${vocabData.length}`;
+    document.getElementById('fc-kanji').innerText = item.word;
+    document.getElementById('fc-hiragana').innerText = `${item.reading} / ${item.romaji}`;
+    
+    document.getElementById('fc-meaning').innerText = item.meaning;
+    document.getElementById('fc-notes').innerText = item.notes ? `Note: ${item.notes}` : '';
+    
+    const exHtml = item.examples.map(ex => `
+        <div class="mb-4">
+            <div class="font-bold text-lg">${ex.j}</div>
+            <div class="text-white/70 text-sm mb-1">${ex.h}</div>
+            <div class="text-white/90">${ex.e}</div>
+        </div>
+    `).join('');
+    document.getElementById('fc-examples').innerHTML = exHtml;
+
+    const btnToggle = document.getElementById('btnToggleMasteryFc');
+    if(isMastered) {
+        btnToggle.innerText = 'Unmark Mastered';
+        btnToggle.classList.remove('bg-[#B87A63]');
+        btnToggle.classList.add('bg-[#5C7256]');
+    } else {
+        btnToggle.innerText = 'Mark Mastered';
+        btnToggle.classList.remove('bg-[#5C7256]');
+        btnToggle.classList.add('bg-[#B87A63]');
+    }
+
+    document.getElementById('btnPrev').disabled = currentFlashcardIndex === 0;
+    document.getElementById('btnPrev').style.opacity = currentFlashcardIndex === 0 ? '0.5' : '1';
+    document.getElementById('btnNext').disabled = currentFlashcardIndex === vocabData.length - 1;
+    document.getElementById('btnNext').style.opacity = currentFlashcardIndex === vocabData.length - 1 ? '0.5' : '1';
+}
+
+init();
+</script>
+</body>
+</html>

@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Our Daily Activities : Admin Page</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        
+        .loader {
+            border-top-color: #3b82f6;
+            animation: spinner 1.5s linear infinite;
+        }
+        @keyframes spinner {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 min-h-screen text-slate-900">
+    <div id="authenticating">
+        <div class="min-h-screen flex items-center justify-center px-4">
+            <div class="max-w-md w-full bg-white p-8 rounded-2xl shadow-xl border border-slate-200 text-center">
+                <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <svg class="w-8 h-8 text-blue-600 loader" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                </div>
+                <h1 class="text-xl font-bold text-slate-800">Authenticating...</h1>
+                <p class="text-slate-500 text-sm mt-1">Please wait while we verify your credentials.</p>
+            </div>
+        </div>
+    </div>
+    <div id="mainContainer" class="hidden">
+        <span id="happyBirthday" class="bg-blue-100 text-blue-800 px-4 py-2 rounded-lg font-bold w-full text-center block hidden"></span>
+        <div class="max-w-4xl mx-auto px-4 py-12">
+            <header class="flex justify-between items-center mb-8">
+                <div>
+                    <h1 class="text-2xl font-bold tracking-tight text-slate-800">Our Library</h1>
+                    <p id="userPage" class="text-slate-500 cursor-pointer hover:text-blue-500 transition underline">Track your daily activities and habits.</p>
+                    <p class="mt-1 text-slate-400 text-sm">Admin: <span id="adminName"></span></p>
+                </div>
+                <div class="flex flex-col items-end self-start space-x-4">
+                    <button id="logoutBtn" class="text-sm font-medium text-slate-400 hover:text-red-500 transition">Logout</button>
+                </div>
+            </header>
+    
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <!-- Form Section -->
+                <section class="bg-white p-8 rounded-2xl shadow-sm border border-slate-200 h-fit">
+                    <h2 class="text-xl font-semibold mb-6 flex items-center">
+                        <svg class="w-5 h-5 mr-2 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        New Entry
+                    </h2>
+                    <form id="userForm" class="space-y-4">
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 mb-1">User</label>
+                                <select id="user" required class="w-full px-4 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition bg-white">
+                                    <option value="Paa Paa">Paa Paa</option>
+                                    <option value="Maa Maa">Maa Maa</option>
+                                    <option value="Son">Son</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 mb-1">Type</label>
+                                <select id="type" required class="w-full px-4 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition bg-white">
+                                    <option value="Walking">Walking</option>
+                                    <option value="Running">Running</option>
+                                    <option value="Reading">Reading</option>
+                                    <option value="Coding">Coding</option>
+                                    <option value="Workout">Workout</option>
+                                    <option value="Meditation">Meditation</option>
+                                    <option value="Learning">Learning</option>
+                                    <option value="Stretching">Stretching</option>
+                                    <option value="Gym">Gym</option>
+                                    <option value="Cycling">Cycling</option>
+                                </select>
+                            </div>
+                        </div>
+    
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 mb-1">Date</label>
+                                <input type="date" id="date" required class="w-full px-4 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 mb-1">Duration</label>
+                                <div id="timeInputContainer"></div>
+                            </div>
+                        </div>
+    
+                        <div id="distanceContainer">
+                            <label class="block text-sm font-medium text-slate-700 mb-1">Distance (KM)</label>
+                            <input type="number" id="distance" step="0.01" class="w-full px-4 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition" placeholder="e.g. 5.25">
+                        </div>
+    
+                        <button type="submit" id="submitBtn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg transition shadow-md hover:shadow-lg flex items-center justify-center">
+                            <span id="btnText">Create Activity</span>
+                            <div id="btnLoader" class="hidden w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin ml-2"></div>
+                        </button>
+                    </form>
+                    <div id="statusMessage" class="mt-4 hidden p-3 rounded-lg text-sm text-center"></div>
+                </section>
+    
+                <!-- Data List Section -->
+                <section class="bg-white p-8 rounded-2xl shadow-sm border border-slate-200">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-xl font-semibold flex items-center">
+                            <svg class="w-5 h-5 mr-2 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"></path></svg>
+                            Daily Acivities
+                        </h2>
+                        <button id="loadDataBtn" title="Refresh Logs" class="p-2 text-slate-400 hover:text-blue-500 transition-colors rounded-full hover:bg-slate-100">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                        </button>
+                    </div>
+    
+                    <div id="displayArea" class="space-y-4 max-h-[600px] overflow-y-auto pr-2 custom-scrollbar">
+                        <div class="text-center py-10 text-slate-400">
+                            <div class="w-12 h-12 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                                 <svg class="w-6 h-6 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path></svg>
+                            </div>
+                            <p>No data loaded yet.</p>
+                            <p class="text-xs">Entries will appear here in the order they were saved.</p>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="../../assets/js/admin.js"></script>
+</body>
+</html>

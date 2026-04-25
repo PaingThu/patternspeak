@@ -1,0 +1,31 @@
+{
+  "name": "mydailyactivities",
+  "version": "1.0.0",
+  "description": "Our daily activities",
+  "main": "index.html",
+  "scripts": {
+    "test": "echo 'Open your browser at localhost:8080' && docker-compose up",
+    "build": "vite build",
+    "build:watch": "vite build --watch",
+    "deploy": "gh-pages -d dist"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/PaingThu/our-daily-activities.git"
+  },
+  "keywords": [],
+  "author": "Paing Thu",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/PaingThu/our-daily-activities/issues"
+  },
+  "homepage": "https://github.com/PaingThu/our-daily-activities",
+  "devDependencies": {
+    "gh-pages": "^6.3.0",
+    "vite": "^8.0.2"
+  },
+  "dependencies": {
+    "@google/generative-ai": "^0.24.1"
+  }
+}

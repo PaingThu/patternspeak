@@ -1,0 +1,9 @@
+services:
+  web:
+    image: nginx:alpine
+    ports:
+      - "8081:80"
+    volumes:
+      # - ./public:/usr/share/nginx/html:ro
+      - ./dist:/usr/share/nginx/html:ro
+    restart: always
