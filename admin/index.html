@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Learn Through Everything - Admin</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&family=Noto+Sans+JP:wght@400;700&family=Noto+Sans+Myanmar:wght@400;700&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --brand-primary: #3b82f6;
+            --brand-secondary: #a855f7;
+            --bg-dark: #09090b;
+            --card-bg: #18181b;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', 'Noto Sans JP', 'Noto Sans Myanmar', sans-serif;
+            background-color: var(--bg-dark);
+            color: #f4f4f5;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* Glassmorphism & Effects */
+        .glass-nav {
+            background: rgba(9, 9, 11, 0.8);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .bento-card {
+            background: var(--card-bg);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .bento-card:hover {
+            border-color: rgba(59, 130, 246, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Interactive Lyrics */
+        .lyric-line {
+            padding: 6px 12px;
+            margin: 2px -12px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: block;
+            width: fit-content;
+            white-space: pre-wrap;
+        }
+
+        .lyric-line:hover {
+            background: rgba(59, 130, 246, 0.08);
+            color: #f4f4f5;
+        }
+
+        .lyric-line.active {
+            background: rgba(59, 130, 246, 0.15);
+            color: #60a5fa;
+            font-weight: 600;
+            box-shadow: 0 0 20px rgba(59, 130, 246, 0.05);
+        }
+
+        /* Sheet Animation */
+        .sheet-transition {
+            transition: transform 0.5s cubic-bezier(0.32, 0.72, 0, 1);
+        }
+
+        .sheet-hidden {
+            transform: translateY(105%);
+        }
+
+        .gradient-text {
+            background: linear-gradient(135deg, #60a5fa 0%, #c084fc 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-dark);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #27272a;
+            border-radius: 10px;
+        }
+
+        .vocab-list::-webkit-scrollbar {
+            width: 4px;
+        }
+    </style>
+  <script type="module" crossorigin src="../assets/admin-Bbd8uszB.js"></script>
+  <link rel="modulepreload" crossorigin href="../assets/modulepreload-polyfill-BvsmSo4J.js">
+  <link rel="modulepreload" crossorigin href="../assets/config-BEWyegNS.js">
+  <link rel="modulepreload" crossorigin href="../assets/admin-B3zMD4ch.js">
+</head>
+
+<body class="min-h-screen">
+
+    <!-- Navigation -->
+    <nav class="glass-nav sticky top-0 z-[60] px-6 py-4">
+        <div class="max-w-5xl mx-auto flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <div
+                    class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center shadow-lg shadow-blue-500/20">
+                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3">
+                        </path>
+                    </svg>
+                </div>
+                <span class="text-xl font-extrabold tracking-tight uppercase">LEARN <i
+                        class="me-1 lowercase">through</i> <span class="text-blue-500"> EVERYTHING </span></span>
+            </div>
+            <!-- Language Selector -->
+            <div class="sm:flex gap-2 bg-zinc-900 p-1 rounded-xl border border-zinc-800">
+                <!-- <button onclick="toggleLang('burmese')" id="btn-burmese"
+                    class="text-[10px] font-bold px-3 py-1.5 rounded-lg transition-all bg-blue-600 text-white">Burmese</button>
+                <button onclick="toggleLang('japanese')" id="btn-japanese"
+                    class="text-[10px] font-bold px-3 py-1.5 rounded-lg transition-all bg-purple-600 text-white">Japanese</button> -->
+                <div class="flex flex-col items-end self-start space-x-4">
+                    <button id="logoutBtn"
+                        class="text-sm font-medium text-slate-400 hover:text-white transition px-3 py-1.5 rounded-lg">Logout</button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-5xl mx-auto p-6 md:p-12">
+        <!-- Hero Search -->
+        <header id="searchView" class="py-12 md:py-20 text-center transition-opacity duration-700">
+            <h1 class="text-5xl md:text-7xl font-black mb-6 leading-tight text-white">
+                Your Music is Your <br><span class="gradient-text">Vocabulary Lab.</span>
+            </h1>
+            <p class="text-zinc-400 text-lg md:text-xl max-w-2xl mx-auto mb-12 font-medium">
+                Deep-dive into meanings. Explore Burmese and Japanese translations for every line in your favorite
+                songs.
+            </p>
+
+            <div class="relative max-w-3xl mx-auto group">
+                <div
+                    class="absolute -inset-1 bg-gradient-to-r from-blue-600 to-purple-600 rounded-3xl blur opacity-25 group-hover:opacity-40 transition duration-1000 group-hover:duration-200 z-0">
+                </div>
+
+                <div
+                    class="relative z-10 bg-zinc-900 border border-zinc-800 rounded-2xl flex items-center p-2 shadow-2xl">
+                    <input type="text" id="songInput" placeholder="Search song, artist, or lyric line..."
+                        class="w-full bg-transparent px-6 py-3 text-lg focus:outline-none placeholder-zinc-600 text-white relative z-20"
+                        autofocus>
+                    <button id="mainSearchBtn"
+                        class="bg-blue-600 hover:bg-blue-500 px-8 py-3 rounded-xl font-bold text-white transition-all shadow-lg active:scale-95 whitespace-nowrap relative z-20">
+                        Find Lyrics
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Loading State -->
+        <div id="loadingUI" class="hidden flex flex-col items-center justify-center py-24">
+            <div class="relative">
+                <div class="w-16 h-16 border-4 border-blue-600/20 border-t-blue-600 rounded-full animate-spin"></div>
+                <div class="absolute inset-0 flex items-center justify-center">
+                    <div class="w-2 h-2 bg-blue-600 rounded-full"></div>
+                </div>
+            </div>
+            <p id="loadingMsg" class="mt-6 text-zinc-400 font-medium animate-pulse">Syncing lyrics with AI database...
+            </p>
+        </div>
+
+        <!-- Lyrics Experience -->
+        <section id="lyricsView" class="hidden pb-40">
+            <div class="flex flex-col md:flex-row gap-12">
+                <div class="flex-grow">
+                    <button id="backToSearch"
+                        class="mb-8 flex items-center gap-2 text-zinc-500 hover:text-white transition group">
+                        <span class="bg-zinc-800 p-2 rounded-lg group-hover:bg-zinc-700">←</span>
+                        <span class="text-sm font-bold uppercase tracking-widest">New Search</span>
+                    </button>
+
+                    <div id="metaHeader" class="mb-12">
+                        <div class="flex items-center gap-4 mb-4">
+                            <span class="h-1 w-12 bg-blue-600 rounded-full"></span>
+                            <span id="metaArtist"
+                                class="text-blue-500 font-bold uppercase tracking-widest text-sm"></span>
+                        </div>
+                        <h2 id="metaTitle" class="text-4xl md:text-6xl font-black mb-2 tracking-tight text-white"></h2>
+                    </div>
+
+                    <div id="lyricsContainer"
+                        class="text-2xl md:text-3xl leading-[1.8] font-light text-zinc-400 select-none">
+                        <!-- Lyrics populate here -->
+                    </div>
+                </div>
+
+                <aside class="hidden lg:block w-80 shrink-0">
+                    <div class="sticky top-32 space-y-6">
+                        <div class="bento-card rounded-2xl p-6 border-blue-500/20 bg-blue-500/5">
+                            <h3
+                                class="text-sm font-bold uppercase tracking-widest text-blue-400 mb-4 flex items-center gap-2">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                                Custom View
+                            </h3>
+                            <p class="text-sm text-zinc-300 leading-relaxed">
+                                Use the toggle buttons at the top to choose your target languages. You can see
+                                <b>both</b> or focus on <b>just one</b>.
+                            </p>
+                        </div>
+                    </div>
+                </aside>
+            </div>
+        </section>
+
+        <div id="errorBox"
+            class="hidden fixed bottom-10 left-1/2 -translate-x-1/2 bg-red-500/10 border border-red-500/50 text-red-400 px-6 py-3 rounded-2xl font-medium shadow-2xl backdrop-blur-xl z-[100]">
+        </div>
+    </main>
+
+    <!-- Overlay & Sheet -->
+    <div id="modalOverlay"
+        class="hidden fixed inset-0 bg-black/80 backdrop-blur-md z-[80] transition-opacity duration-300 opacity-0">
+    </div>
+
+    <div id="translationSheet" class="hidden fixed bottom-0 left-0 right-0 z-[100] sheet-transition sheet-hidden">
+        <div class="max-w-5xl mx-auto">
+            <div
+                class="bg-[#1c1c1f] rounded-t-[40px] border-t border-x border-zinc-800 p-8 md:p-12 shadow-[0_-20px_60px_-15px_rgba(0,0,0,0.8)] max-h-[90vh] overflow-y-auto custom-scrollbar">
+                <div class="w-12 h-1.5 bg-zinc-800 rounded-full mx-auto -mt-4 mb-8"></div>
+
+                <div class="flex flex-col gap-6 mb-8">
+                    <div class="flex flex-wrap items-center justify-between gap-4">
+                        <div class="flex items-center gap-3">
+                            <span
+                                class="text-[10px] bg-blue-600/10 text-blue-500 px-2 py-0.5 rounded font-black uppercase tracking-tighter">Line
+                                Translation</span>
+
+                            <!-- Toggle Controls in Sheet -->
+                            <div class="flex gap-1">
+                                <label
+                                    class="flex items-center gap-1.5 cursor-pointer bg-zinc-900 hover:bg-zinc-800 px-2.5 py-1 rounded-lg border border-zinc-800 transition-colors">
+                                    <input type="checkbox" id="sheet-toggle-burmese" onchange="toggleLang('burmese')"
+                                        class="w-3.5 h-3.5 accent-blue-600">
+                                    <span class="text-[10px] font-bold text-zinc-400 select-none">Burmese</span>
+                                </label>
+                                <label
+                                    class="flex items-center gap-1.5 cursor-pointer bg-zinc-900 hover:bg-zinc-800 px-2.5 py-1 rounded-lg border border-zinc-800 transition-colors">
+                                    <input type="checkbox" id="sheet-toggle-japanese" onchange="toggleLang('japanese')"
+                                        class="w-3.5 h-3.5 accent-purple-600">
+                                    <span class="text-[10px] font-bold text-zinc-400 select-none">Japanese</span>
+                                </label>
+                            </div>
+                        </div>
+                        <button id="closeSheet"
+                            class="w-10 h-10 bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 rounded-full flex items-center justify-center transition active:scale-90">
+                            <svg class="w-5 h-5 text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="max-w-full">
+                        <h4 id="sentenceDisplay"
+                            class="text-2xl md:text-3xl font-bold text-white tracking-tight leading-snug"></h4>
+                    </div>
+                </div>
+
+                <div id="transLoading" class="flex flex-col items-center py-12">
+                    <div class="w-10 h-10 border-4 border-zinc-800 border-t-purple-600 rounded-full animate-spin"></div>
+                    <span class="mt-4 text-zinc-500 text-sm font-bold uppercase tracking-widest">Generating Vocabulary
+                        Lab...</span>
+                </div>
+
+                <div id="transResult" class="hidden grid grid-cols-1 gap-6">
+                    <!-- Burmese Card -->
+                    <div id="card-burmese" class="bento-card p-6 rounded-[32px] flex flex-col h-full">
+                        <div class="flex items-center gap-2 mb-4">
+                            <span
+                                class="w-2 h-2 rounded-full bg-blue-500 shadow-[0_0_10px_rgba(59,130,246,0.5)]"></span>
+                            <span class="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Burmese
+                                (မြန်မာဘာသာ)</span>
+                        </div>
+                        <div id="burmeseMean"
+                            class="text-xl md:text-2xl text-white font-bold mb-4 tracking-tight leading-relaxed text-left">
+                        </div>
+                        <div id="burmeseExpl" class="text-sm text-zinc-400 leading-relaxed font-medium mb-6 text-left">
+                        </div>
+
+                        <div class="mt-auto border-t border-zinc-800 pt-4">
+                            <h5 class="text-[10px] font-black text-zinc-500 uppercase tracking-widest mb-3">Key
+                                Vocabulary</h5>
+                            <div id="burmeseVocab" class="space-y-2 max-h-48 overflow-y-auto pr-2 vocab-list"></div>
+                        </div>
+                    </div>
+
+                    <!-- Japanese Card -->
+                    <div id="card-japanese" class="bento-card p-6 rounded-[32px] flex flex-col h-full">
+                        <div class="flex items-center gap-2 mb-4">
+                            <span
+                                class="w-2 h-2 rounded-full bg-purple-500 shadow-[0_0_10px_rgba(168,85,247,0.5)]"></span>
+                            <span class="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Japanese
+                                (日本語)</span>
+                        </div>
+                        <div id="japaneseMean"
+                            class="text-xl md:text-2xl text-white font-bold mb-4 tracking-tight leading-relaxed text-left">
+                        </div>
+                        <div id="japaneseExpl" class="text-sm text-zinc-400 leading-relaxed font-medium mb-6 text-left">
+                        </div>
+
+                        <div class="mt-auto border-t border-zinc-800 pt-4">
+                            <h5 class="text-[10px] font-black text-zinc-500 uppercase tracking-widest mb-3">Key
+                                Vocabulary</h5>
+                            <div id="japaneseVocab" class="space-y-2 max-h-48 overflow-y-auto pr-2 vocab-list"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
