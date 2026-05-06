@@ -19,10 +19,7 @@ export default defineConfig({
             input: {
                 main: resolve(__dirname, 'src/index.html'),
                 admin: resolve(__dirname, 'src/admin/index.html'),
-                'admin/login': resolve(__dirname, 'src/admin/login/index.html'),
-                'admin/library': resolve(__dirname, 'src/admin/library/index.html'),
-                'our-library': resolve(__dirname, 'src/our-library/index.html'),
-                // Add more here, e.g., login: resolve(__dirname, 'public/login.html')
+                'admin/login': resolve(__dirname, 'src/admin/login/index.html')
             },
         },
     },
