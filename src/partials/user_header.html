@@ -1,0 +1,39 @@
+<header class="flex flex-col md:flex-row justify-between items-center gap-4 bg-primary text-white shadow-lg shadow-primary/20 rounded-3xl p-4 mb-8 transition-colors duration-200">
+    <div class="flex items-center space-x-4 ml-2">
+        <div class="relative bg-white w-14 h-14 rounded-full shadow-lg flex items-center justify-center transform hover:rotate-0 transition-transform cursor-pointer border-2 p-1 overflow-hidden">
+            <img id="logo-img" alt="" class="w-full h-full object-contain drop-shadow-md">
+        </div>
+        <div>
+            <h1 class="text-3xl font-heading font-black tracking-tight leading-none text-white">PatternSpeak</h1>
+            <p class="text-sm font-semibold text-primary-light mt-1" data-ui="tagline">Master English through speaking patterns</p>
+        </div>
+    </div>
+
+    <!-- Quick Controls (Language, Theme, Progress Stats) -->
+    <div class="flex flex-wrap items-center gap-4">
+        <!-- Global Stats -->
+        <div class="bg-primary-dark px-4 py-2 rounded-2xl flex items-center gap-2 border border-primary-light/20">
+            <i class="fa-solid fa-star text-accent text-lg animate-bounce"></i>
+            <span class="text-sm font-bold text-white font-heading">
+                <span id="stats-mastered">0</span>/<span id="stats-total">5</span> <span data-ui="stats-label" class="text-primary-light">Mastered</span>
+            </span>
+        </div>
+
+        <!-- Language Selector Button -->
+        <div class="relative">
+            <select id="lang-selector" class="appearance-none font-heading bg-primary-dark border-2 border-primary-light/20 text-white font-bold text-sm rounded-2xl py-2.5 px-5 pr-10 focus:outline-none focus:border-accent focus:ring-4 focus:ring-accent/20 cursor-pointer transition">
+                <option value="en">🇬🇧 English</option>
+                <option value="ja">🇯🇵 日本語</option>
+                <option value="my">🇲🇲 မြန်မာ</option>
+            </select>
+            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-primary-light">
+                <i class="fa-solid fa-chevron-down text-sm"></i>
+            </div>
+        </div>
+
+        <!-- Settings / Reset Button -->
+        <button id="btn-reset" class="w-11 h-11 flex items-center justify-center bg-primary-dark hover:bg-action text-white rounded-2xl transition duration-200 border-2 border-primary-light/20 hover:border-action-light" title="Reset Progress">
+            <i class="fa-solid fa-arrows-rotate text-lg"></i>
+        </button>
+    </div>
+</header>

@@ -1,12 +1,16 @@
+import logo from '../images/logo.png';
+import homePageLogo from '../images/hlogo.png';
 export const COMMON = {
     ipaddress: await fetch('https://api.ipify.org?format=json')
         .then(res => res.json())
         .then(data => data.ip)
         .catch(() => 'Unknown'),
-    adminName: null
+    adminName: null,
 };
 
-export const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbzgsuA7_mjRWvpcuagCPKYlE91vxq0V2M4XGXT9udM3yLZ2mvr8TBL0eFYv7VvoVnpK/exec';
+export { logo, homePageLogo };
+
+export const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbytRdI6QIvpAEvlqEJVj5I9L7dAmakmaXPpQdE2gOVbwTFsMU1PpPrzzF05BDE5F-Q/exec';
 
 export const getBasePath = () => {
     const path = window.location.pathname;
@@ -43,13 +47,12 @@ export const deleteCookie = (name) => {
 export function loadingSpinner(label) {
     return `
             <div class="flex flex-col items-center justify-center py-12 space-y-3">
-                <div class="w-10 h-10 border-4 border-slate-100 border-t-blue-500 rounded-full animate-spin"></div>
+                <div class="w-10 h-10 border-4 border-slate-100 border-t-primary rounded-full animate-spin"></div>
                 <span class="text-xs font-medium text-slate-400">${label}...</span>
             </div>`
 }
 
 export async function tokenCheck(pageType = 'login') {
-
     if (token) {
         if(pageType === 'login'){
             displayArea.innerHTML = loadingSpinner('');
@@ -64,13 +67,11 @@ export async function tokenCheck(pageType = 'login') {
                 method: 'POST',
                 body: JSON.stringify(payload)
             });
-
             if (!response.ok) {
                 throw new Error("Server returned status " + response.status);
             }
 
             const result = await response.json();
-
             if (result.status === 'success') {
                 if (pageType === 'login') {
                     window.location.href = getBasePath() + "admin/";

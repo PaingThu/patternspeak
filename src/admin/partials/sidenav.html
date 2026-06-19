@@ -1,0 +1,36 @@
+<nav class="min-h-[calc(100vh-5rem)] w-full mb-6 md:mb-0 bg-primary  shadow-xl ">
+    <div class="nav-container flex flex-col h-full">
+        <button id="menu-btn" class="focus:outline-none ms-auto p-3 cursor-pointer">
+            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+            </svg>
+        </button>
+        <ul class="menu">
+            <li class="menu-item flex items-center gap-3 cursor-pointer">
+                <details class="group w-full max-w-sm overflow-hidden font-sans">
+                    <summary class="w-full flex justify-between items-center transition-colors p-3 border-b border-primary-dark cursor-pointer group-open:bg-white list-none [&::-webkit-details-marker]:hidden">
+                        <div class="flex items-center gap-2">
+                            <span class="fi fi-gb"></span>
+                            <span class="font-bold">English</span>
+                        </div>
+                        <svg class="size-5 transition-transform duration-300 group-open:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </summary>
+                    <div class="flex flex-col">
+                        <a href="./" class="block p-3 text-white hover:text-mist-200 border-b border-primary-dark transition-colors">
+                        Speaking Pattern
+                        </a>
+                        <a href="./grammar-pattern" class="block p-3 text-white hover:text-mist-200 border-b border-primary-dark transition-colors">
+                        Grammar Pattern
+                        </a>
+                    </div>
+                </details>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+<script type="module">
+    import "flag-icons/css/flag-icons.min.css";
+</script>

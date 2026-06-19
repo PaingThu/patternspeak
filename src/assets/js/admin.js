@@ -1,12 +1,14 @@
-import { WEB_APP_URL, COMMON, tokenCheck, getBasePath } from "./config.js";
+// import '../style.css';
+import { WEB_APP_URL, COMMON, tokenCheck, getBasePath, logo } from "./config.js";
 
 const authenticating = document.getElementById('authenticating');
 const mainContainer = document.getElementById('mainContainer');
 
+const logoElement = document.querySelector('#logo-img');
+logoElement.src = logo;
 
 const init = async () => {
     const result = await tokenCheck('admin');
-    console.log("result ", result);
     if (result && result.status === 'success') {
         // admin.textContent = result.name;
         // user.value = result.user;
@@ -312,9 +314,10 @@ el.overlay.onclick = closeTranslation;
 // Initialize UI
 updateLangUI();
 
-function logout() {
-    document.cookie = "userToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-    window.location.href = getBasePath() + "admin/login/";
-}
+// function logout() {
+//     console.log("Logging out...");
+//     document.cookie = "userToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+//     window.location.href = getBasePath() + "admin/login/";
+// }
 
-el.logoutBtn.addEventListener("click", logout);
+// el.logoutBtn.addEventListener("click", logout);

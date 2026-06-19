@@ -1,4 +1,8 @@
-import { COMMON, WEB_APP_URL, getBasePath, loadingSpinner } from "./config.js";
+import '../style.css';
+import { COMMON, WEB_APP_URL, getBasePath, loadingSpinner, logo, homePageLogo } from "./config.js";
+
+const logoElement = document.querySelector('#logo-img');
+logoElement.src = logo;
 
 // Elements
 const loginForm = document.getElementById('loginForm');

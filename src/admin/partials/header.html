@@ -1,0 +1,35 @@
+<!-- Navigation -->
+<nav class="glass-nav sticky top-0 z-[60] px-6 py-4 shadow-xl">
+    <div class="mx-auto flex justify-between items-center">
+        <div class="flex items-center gap-3">
+            <div
+                class="w-12 h-12 rounded-full flex items-center justify-center shadow-lg shadow-blue-500/20">
+                <img id="logo-img" alt="" class="w-full h-full drop-shadow-md object-cover">
+            </div>
+            <span class="text-secondary text-xl font-extrabold tracking-tight uppercase">LEARN <i
+                    class="me-1 lowercase">through</i> <span class="text-primary"> EVERYTHING </span></span>
+        </div>
+        <div class="sm:flex gap-2 bg-secondary p-1 rounded-xl border border-zinc-800">
+            <div class="flex flex-col items-end self-start space-x-4">
+                <button id="logoutBtn"
+                    class="text-sm font-medium text-slate-400 hover:text-white transition px-3 py-1.5 rounded-lg">Logout</button>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<script type="module">
+    import { WEB_APP_URL, COMMON, tokenCheck, getBasePath, logo } from "/assets/js/config.js";
+    
+    const el = {
+        logoutBtn: document.getElementById('logoutBtn')
+    };
+    function logout() {
+        console.log("Logging out..." , WEB_APP_URL);
+        document.cookie = "userToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+        window.location.href = getBasePath() + "admin/login/";
+    }
+    
+    el.logoutBtn.addEventListener("click", logout);
+
+</script>
