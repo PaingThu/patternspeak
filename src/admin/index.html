@@ -105,61 +105,14 @@
 <body class="min-h-screen bg-primary">
 
     {{> header }}
-    <main class="flex flex-col md:flex-row bg-white" id="mainContainer">
-        <div class="w-full md:w-1/7">{{> sidenav }}</div>
-        <div class="content-container w-full md:w-6/7 bg-white shadow-xl border border-slate-200">
+    <main class="relative flex flex-col md:flex-row bg-white" id="mainContainer">
+        <div class="fixed w-full md:w-1/7">{{> sidenav }}</div>
+        <div class="ml-0 md:ml-[14.2857143%] content-container w-full md:w-6/7 bg-white shadow-xl border border-slate-200">
             <div class="header h-[56px] px-6 flex items-center border-b border-slate-200">
                 <h1 class="text-2xl font-bold text-slate-800">English Speaking Patterns</h1>
             </div> 
             <div class="content p-6">
-                <form id="userForm" class="space-y-4">
-                    <div class="grid grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-sm font-medium text-slate-700 mb-1">Level</label>
-                            <select id="user" required class="w-full px-4 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition bg-white">
-                                <option value="Paa Paa">Paa Paa</option>
-                                <option value="Maa Maa">Maa Maa</option>
-                                <option value="Son">Son</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-slate-700 mb-1">Type</label>
-                            <select id="type" required class="w-full px-4 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition bg-white">
-                                <option value="Walking">Walking</option>
-                                <option value="Running">Running</option>
-                                <option value="Reading">Reading</option>
-                                <option value="Coding">Coding</option>
-                                <option value="Workout">Workout</option>
-                                <option value="Meditation">Meditation</option>
-                                <option value="Learning">Learning</option>
-                                <option value="Stretching">Stretching</option>
-                                <option value="Gym">Gym</option>
-                                <option value="Cycling">Cycling</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="grid grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-sm font-medium text-slate-700 mb-1">Date</label>
-                            <input type="date" id="date" required class="w-full px-4 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-slate-700 mb-1">Duration</label>
-                            <div id="timeInputContainer"></div>
-                        </div>
-                    </div>
-
-                    <div id="distanceContainer">
-                        <label class="block text-sm font-medium text-slate-700 mb-1">Distance (KM)</label>
-                        <input type="number" id="distance" step="0.01" class="w-full px-4 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition" placeholder="e.g. 5.25">
-                    </div>
-
-                    <button type="submit" id="submitBtn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg transition shadow-md hover:shadow-lg flex items-center justify-center">
-                        <span id="btnText">Create Activity</span>
-                        <div id="btnLoader" class="hidden w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin ml-2"></div>
-                    </button>
-                </form>
+                {{> patternForm }}
             </div>
         </div>
     </main>

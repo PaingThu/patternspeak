@@ -61,7 +61,6 @@ const el = {
     lyricsView: document.getElementById('lyricsView'),
     loadingUI: document.getElementById('loadingUI'),
     loadingMsg: document.getElementById('loadingMsg'),
-    songInput: document.getElementById('songInput'),
     mainSearchBtn: document.getElementById('mainSearchBtn'),
     lyricsContainer: document.getElementById('lyricsContainer'),
     metaTitle: document.getElementById('metaTitle'),
@@ -302,14 +301,13 @@ function closeTranslation() {
     }, 500);
 }
 
-el.mainSearchBtn.onclick = () => getLyrics(el.songInput.value.trim());
 // el.songInput.onkeypress = (e) => e.key === 'Enter' && getLyrics(el.songInput.value.trim());
-el.backBtn.onclick = () => {
-    toggleUI('search');
-    el.songInput.focus();
-};
-el.closeSheet.onclick = closeTranslation;
-el.overlay.onclick = closeTranslation;
+// el.backBtn.onclick = () => {
+//     toggleUI('search');
+//     el.songInput.focus();
+// };
+// el.closeSheet.onclick = closeTranslation;
+// el.overlay.onclick = closeTranslation;
 
 // Initialize UI
 updateLangUI();
