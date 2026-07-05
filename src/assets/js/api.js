@@ -33,8 +33,47 @@ export const api = {
         // GAS requires specific setups for POST requests, but for simple apps,
         // people often send data via GET parameters or a stringified payload
         return fetchFromGAS('submitScore', { payload: JSON.stringify(scoreData) });
+    },
+    savePattern: (patternData) => {
+        return saveToGAS('savePattern', patternData);
     }
 };
+
+async function saveToGAS(action, data) {
+    try {
+
+        const payload = {
+            action: action,
+            token: token,
+            userIp: COMMON.ipaddress,
+            data: data
+        };
+
+        console.log("Saving data to GAS with payload:", payload);
+        const response = await fetch(WEB_APP_URL, {
+            method: 'POST',
+            body: JSON.stringify(payload)
+        });
+        console.log("Response from GAS:", response);
+
+        if (!response.ok) {
+            throw new Error("Server returned status " + response.status);
+        }
+
+        const result = await response.json();
+
+        if (result.status === 'ok') {
+            return result.latestId; // Assuming the server returns the saved data in result.data
+        } else {
+            console.error("Failed to save data:", result.message);
+            throw new Error("Failed to save data: " + result.message);
+        }
+    } catch (err) {
+        console.error("Error in saveToGAS:", err);
+        console.error("Failed to save data:", err);
+        throw err;
+    }
+}
 
 async function getPatternLevels() {
     if(token){

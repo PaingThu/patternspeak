@@ -48,7 +48,6 @@
 <script type="module">
     import { api } from "/assets/js/api.js";
     import { loadingSpinner } from "/assets/js/config.js";
-
     const displayArea = document.getElementById('displayArea');
     const addExampleBtn = document.getElementById('addExampleBtn');
     const exampleSentencesContainer = document.getElementById('exampleSentencesContainer');
@@ -56,13 +55,8 @@
     const submitBtn = document.getElementById('submitBtn');
     const btnText = document.getElementById('btnText');
     const btnLoader = document.getElementById('btnLoader');
-
-    // Example Sentences အတွက် Count ကို Track လုပ်မယ့် Variable
     let exampleCount = 1;
-    // Levels Data ကို Store လုပ်မယ့် Variable
     let levels = [];
-
-    // English Speaking Patterns Levels Dropdown အတွက် Data Fetch လုပ်မယ့် Function
     async function getPatternLevels() {
         try {
             displayArea.innerHTML = loadingSpinner('Data Loading .....');
@@ -91,10 +85,9 @@
             console.error("Error fetching levels: ", error);
         }
     }
-    // Page Load အချိန်မှာ Levels Data ကို Fetch လုပ်မယ့် Function ကို ခေါ်မယ်
+
     getPatternLevels();
 
-    // Example Sentences အတွက် Add Example Button ကို Click လုပ်တဲ့အခါ New Example Field တစ်ခုထပ်ထည့်မယ့် Function
     addExampleBtn.addEventListener('click', () => {
         exampleCount++;
         const newExample = document.createElement('textarea');
@@ -127,8 +120,6 @@
         exampleWrapper.appendChild(removeBtn);
         exampleSentencesContainer.appendChild(exampleWrapper);
     }); 
-
-    // Pattern Form ကို Submit လုပ်တဲ့အခါ Data ကို Collect လုပ်ပြီး DB သို့ပို့မယ့် Function
     patternForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         btnText.textContent = 'Submitting...';
@@ -156,25 +147,6 @@
             exampleSentences
         };
         console.log("Pattern Data: ", patternData);
-        api.savePattern(patternData)
-            .then(response => {
-                console.log("Pattern saved successfully: ", response);
-                // Reset the form after successful submission
-                patternForm.reset();
-                exampleSentencesContainer.innerHTML = `
-                    <div class="relative flex items-center gap-2">
-                        <textarea id="exampleSentence1" required class="example-sentence w-full px-4 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-primary-light focus:border-transparent outline-none transition" placeholder="Enter example sentence 1"></textarea>
-                    </div>
-                `;
-                exampleCount = 1;
-            })
-            .catch(error => {
-                console.error("Error saving pattern: ", error);
-            })
-            .finally(() => {
-                btnText.textContent = 'Create Pattern';
-                btnLoader.classList.add('hidden');
-            }); 
         // Here you can send the patternData to your server or API
         // After submission, reset the form and loader
         btnText.textContent = 'Create Pattern';
