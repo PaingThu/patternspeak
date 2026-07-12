@@ -1,42 +1,23 @@
 import { WEB_APP_URL, COMMON, token } from "./config.js";
 
-// 2. Create a generic fetch handler to handle GAS quirks
-async function fetchFromGAS(action, params = {}) {
-    try {
-        // Construct the URL with query parameters (GAS loves GET requests)
-        const url = new URL(WEB_APP_URL);
-        url.searchParams.append('action', action);
-        
-        // Add any extra parameters
-        Object.keys(params).forEach(key => url.searchParams.append(key, params[key]));
-
-        // Fetch from GAS
-        const response = await fetch(url);
-        
-        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-        
-        return await response.json();
-    } catch (error) {
-        console.error(`API Error (${action}):`, error);
-        throw error; // Re-throw so your UI can handle it
-    }
-}
-
 // 3. Export clean, API-style functions
 export const api = {
     tokenCheck: (pageType) => tokenCheck(pageType),
     getLevels: () => getPatternLevels(),
-    
-    getPatternDetails: (patternId) => fetchFromGAS('getPattern', { id: patternId }),
-    
-    submitUserScore: (scoreData) => {
-        // GAS requires specific setups for POST requests, but for simple apps,
-        // people often send data via GET parameters or a stringified payload
-        return fetchFromGAS('submitScore', { payload: JSON.stringify(scoreData) });
-    },
-    savePattern: (patternData) => {
-        return saveToGAS('savePattern', patternData);
-    }
+    getPatternList: () => getPatternList()
+};
+
+const getExamples = (examplesString) => {
+    let examplesArray = [];
+    if (!examplesString) return examplesArray;
+    const examples = JSON.parse(examplesString).map(example => example.split('---'));
+    examples.forEach(example => {
+        const en = example[0];
+        const ja = example[1];
+        const my = example[2];
+        examplesArray.push({ en, ja, my });
+    });
+    return examplesArray;
 };
 
 async function saveToGAS(action, data) {
@@ -77,7 +58,6 @@ async function saveToGAS(action, data) {
 
 async function getPatternLevels() {
     if(token){
-        console.log("Fetching pattern levels with token:", token);
         try {
             let payload = {
                 action: 'getPatternLevels',
@@ -95,6 +75,52 @@ async function getPatternLevels() {
 
             if(result.status === 'ok'){
                 return result.data; // Assuming the server returns the levels in result.data
+            } else {
+                throw new Error("Failed to fetch pattern levels: " + result.message);
+            }
+        } catch (err) {
+            console.error("Failed to fetch pattern levels:", err);
+            throw err;
+        }
+        
+    }else{
+        // throw new Error("User token is missing. Cannot fetch pattern levels.");
+        console.error("User token is missing. Cannot fetch pattern levels.");
+    }
+}
+
+async function getPatternList() {
+    if(token){
+        try {
+            let payload = {
+                action: 'getPatternList',
+                token: token,
+                userIp: COMMON.ipaddress
+            };
+            const response = await fetch(WEB_APP_URL, {
+                method: 'POST',
+                body: JSON.stringify(payload)
+            });
+            if (!response.ok) {
+                throw new Error("Server returned status " + response.status);
+            }
+            const result = await response.json();
+
+            if(result.status === 'ok'){
+                const data = result.data;
+                let patternInfoList = [];
+                patternInfoList = data.map(entry => {
+                    return {
+                        "id": entry[0],
+                        "level": entry[1],
+                        "title": entry[2],
+                        "formula": entry[3],
+                        "explanation": { "en": entry[4], "ja": entry[5], "my": entry[6] },
+                        "examples": getExamples(entry[7]),
+                        "created_at": entry[8],
+                    };
+                });
+                return patternInfoList;
             } else {
                 throw new Error("Failed to fetch pattern levels: " + result.message);
             }

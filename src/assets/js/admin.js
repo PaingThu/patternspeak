@@ -3,6 +3,8 @@ import { WEB_APP_URL, COMMON, tokenCheck, getBasePath, logo } from "./config.js"
 
 const authenticating = document.getElementById('authenticating');
 const mainContainer = document.getElementById('mainContainer');
+const createPatternBtn = document.getElementById('createPatternBtn');
+const patternForm = document.getElementById('patternForm');
 
 const logoElement = document.querySelector('#logo-img');
 logoElement.src = logo;
@@ -17,6 +19,22 @@ const init = async () => {
         // loadData();
     }
 };
+
+const handleCreatePattern = () => {
+    if (patternForm.classList.contains('hidden')) {
+        patternForm.classList.remove('hidden');
+        createPatternBtn.textContent = "Cancel";
+        createPatternBtn.classList.add('bg-gray-600', 'hover:bg-gray-700');
+        createPatternBtn.classList.remove('bg-primary', 'hover:bg-primary-700');
+    } else {
+        patternForm.classList.add('hidden');
+        createPatternBtn.textContent = "Create Pattern";
+        createPatternBtn.classList.add('bg-primary', 'hover:bg-primary-700');
+        createPatternBtn.classList.remove('bg-gray-600', 'hover:bg-gray-700');
+    }
+};
+
+createPatternBtn.addEventListener('click', handleCreatePattern);
 
 if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", init);

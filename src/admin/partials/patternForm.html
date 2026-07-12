@@ -39,10 +39,6 @@
         <span id="btnText">Create Pattern</span>
         <div id="btnLoader" class="hidden w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin ml-2"></div>
     </button>
-
-    <div id="displayArea" class="space-y-4 max-h-[600px] overflow-y-auto pr-2 custom-scrollbar">
-
-    </div>
 </form>
 
 <script type="module">
@@ -65,7 +61,7 @@
     // English Speaking Patterns Levels Dropdown အတွက် Data Fetch လုပ်မယ့် Function
     async function getPatternLevels() {
         try {
-            displayArea.innerHTML = loadingSpinner('Data Loading .....');
+            
             const response = await api.getLevels();
             console.log("Levels: ", response);
             levels = response.map(entry => {
@@ -85,7 +81,6 @@
                 option.textContent = level.label_en;
                 levelSelect.appendChild(option);
             });
-            displayArea.innerHTML = ''; // Clear loading message
 
         } catch (error) {
             console.error("Error fetching levels: ", error);

@@ -1,0 +1,67 @@
+<div class="w-full h-full"> 
+    <div id="displayArea" class="space-y-4 max-h-[600px] overflow-y-auto pr-2 custom-scrollbar"></div>
+    <div id="patternList" class="space-y-4 max-h-[600px] overflow-y-auto pr-2 custom-scrollbar"></div>
+
+    </div>
+</div>
+
+<script type="module">
+    import { api } from "/assets/js/api.js";
+    import { loadingSpinner } from "/assets/js/config.js";
+
+    const displayArea = document.getElementById('displayArea');
+    const patternList = document.getElementById('patternList');
+
+    let currentPage = 1;
+    let totalPages = 1;
+
+    const fetchPatterns = async (page) => {
+        try {
+            displayArea.innerHTML = loadingSpinner('Data Loading .....');
+            const patternInfoList = await api.getPatternList();
+            if (!patternInfoList || !Array.isArray(patternInfoList)) {
+                displayArea.innerHTML = `<p class="text-red-500">No patterns found.</p>`;
+                return
+            }
+            patternList.innerHTML = ''; // Clear existing patterns
+            patternInfoList.forEach(pattern => {
+                const patternItem = document.createElement('div');
+                patternItem.className = 'p-4 border rounded shadow hover:shadow-lg transition';
+                patternItem.innerHTML = `
+                    <p class="text-sm text-gray-600">Level: ${pattern.level}</p>
+                    <h2 class="text-lg font-semibold">${pattern.title}</h2>
+                    <p class="text-sm text-gray-700">Formula: ${pattern.formula}</p>
+                    <div class="explanation mt-2">
+                        <h3 class="text-md font-medium">Explanation:</h3>
+                        <p class="text-sm text-gray-700">EN: ${pattern.explanation.en}</p>
+                        <p class="text-sm text-gray-700">JA: ${pattern.explanation.ja}</p>
+                        <p class="text-sm text-gray-700">MY: ${pattern.explanation.my}</p>
+                    </div>
+                    <div class="examples my-2">
+                        <h3 class="text-md font-medium">Examples:</h3>
+                        <div class="example-list mt-2 space-y-2">
+                            ${pattern.examples.map(example => `
+                            <div class="example p-2 border rounded">
+                                <ul class="list-disc list-inside">
+                                    <li>${example.en}・${example.ja}・${example.my}</li>
+                                </ul>
+                            </div>
+                            `).join('')}
+                        </div>
+
+                    </div>
+                    <p class="text-xs text-gray-500">Created At: ${pattern.created_at}</p>
+                `;
+                patternList.appendChild(patternItem);
+            });     
+                // renderPatterns(data.patterns);
+                // totalPages = data.totalPages;
+                // renderPagination();
+            displayArea.innerHTML = ''; // Clear loading message
+        } catch (error) {
+            console.error("Error fetching patterns:", error);
+            displayArea.innerHTML = `<p class="text-red-500">An error occurred while fetching patterns. Please try again later.</p>`;
+        }
+    };
+    fetchPatterns(currentPage);
+</script>
