@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PatternSpeak : Admin Page</title>
-    <link rel="stylesheet" href="../../assets/style.css">
+    <link rel="stylesheet" href="../../../assets/style.css">
     <link
         href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&family=Noto+Sans+JP:wght@400;700&family=Noto+Sans+Myanmar:wght@400;700&display=swap"
         rel="stylesheet">
@@ -107,12 +107,10 @@
     {{> header }}
     <main class="relative flex flex-col md:flex-row bg-white" id="mainContainer">
         <div class="fixed w-full md:w-1/7">{{> sidenav }}</div>
-        <div class="ml-0 md:ml-[14.2857143%] content-container w-full md:w-6/7 bg-white shadow-xl border border-slate-200">
-            <div class="header h-[56px] px-6 flex items-center border-b border-slate-200">
-                <h1 class="text-2xl font-bold text-slate-800">Grammar Patterns</h1>
-            </div> 
-            <div class="content p-6">
-                {{> patternForm }}
+        <div class="ml-0 md:ml-[14.2857143%] content-container w-full h-full md:w-6/7 bg-white shadow-xl border border-slate-200">
+            
+            <div id="patternDetail" class="hidden content p-6 border border-slate-200 bg-white">
+                {{> patternDetail }}
             </div>
         </div>
     </main>
@@ -122,7 +120,17 @@
         class="hidden fixed inset-0 bg-black/80 backdrop-blur-md z-[80] transition-opacity duration-300 opacity-0">
     </div>
 
-    <!-- <script type="module" src="../../assets/js/admin.js"></script> -->
+    <script type="module">
+        import { loadingSpinner, getBasePath, tokenCheck } from "/assets/js/config.js";
+        const init = async () => {
+            const isAuthenticated = await tokenCheck('detail');
+            console.log("isAuthenticated: ", isAuthenticated);
+            if (!isAuthenticated) {
+                window.location.href = getBasePath() + "admin/login/";
+            }
+        };
+        init();
+    </script>
 </body>
 
 </html>

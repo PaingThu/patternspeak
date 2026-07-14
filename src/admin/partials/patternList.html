@@ -1,16 +1,14 @@
 <div class="w-full h-full"> 
     <div id="displayArea" class="space-y-4 max-h-[600px] overflow-y-auto pr-2 custom-scrollbar"></div>
-    <div id="patternList" class="space-y-4 max-h-[600px] overflow-y-auto pr-2 custom-scrollbar"></div>
-
-    </div>
+    <div id="patternListContainer" class="space-y-4 max-h-[600px] overflow-y-auto pr-2 custom-scrollbar"></div>
 </div>
 
 <script type="module">
     import { api } from "/assets/js/api.js";
-    import { loadingSpinner } from "/assets/js/config.js";
+    import { loadingSpinner, getBasePath } from "/assets/js/config.js";
 
     const displayArea = document.getElementById('displayArea');
-    const patternList = document.getElementById('patternList');
+    const patternListContainer = document.getElementById('patternListContainer');
 
     let currentPage = 1;
     let totalPages = 1;
@@ -23,37 +21,51 @@
                 displayArea.innerHTML = `<p class="text-red-500">No patterns found.</p>`;
                 return
             }
-            patternList.innerHTML = ''; // Clear existing patterns
+            patternListContainer.innerHTML = ''; // Clear existing patterns
+            const patternItem = document.createElement('div');
+            patternItem.className = 'p-4 border rounded shadow hover:shadow-lg transition';
+            let tableHTML = `
+                <div class="w-full overflow-x-auto">
+                    <table class="w-max border-collapse border border-gray-300 text-left text-sm">
+                        <thead>
+                            <tr class="bg-primary">
+                                <th class="p-2 border">Level</th>
+                                <th class="p-2 border">Detail</th>
+                                <th class="p-2 border">Title</th>
+                                <th class="p-2 border">Formula</th>
+                                <th class="p-2 border">Explanation (EN)</th>
+                                <th class="p-2 border">Explanation (JA)</th>
+                                <th class="p-2 border">Explanation (MY)</th>
+                                <th class="p-2 border">Created At</th>
+                            </tr>
+                        </thead>
+                        <tbody>        
+            `;
             patternInfoList.forEach(pattern => {
-                const patternItem = document.createElement('div');
-                patternItem.className = 'p-4 border rounded shadow hover:shadow-lg transition';
-                patternItem.innerHTML = `
-                    <p class="text-sm text-gray-600">Level: ${pattern.level}</p>
-                    <h2 class="text-lg font-semibold">${pattern.title}</h2>
-                    <p class="text-sm text-gray-700">Formula: ${pattern.formula}</p>
-                    <div class="explanation mt-2">
-                        <h3 class="text-md font-medium">Explanation:</h3>
-                        <p class="text-sm text-gray-700">EN: ${pattern.explanation.en}</p>
-                        <p class="text-sm text-gray-700">JA: ${pattern.explanation.ja}</p>
-                        <p class="text-sm text-gray-700">MY: ${pattern.explanation.my}</p>
-                    </div>
-                    <div class="examples my-2">
-                        <h3 class="text-md font-medium">Examples:</h3>
-                        <div class="example-list mt-2 space-y-2">
-                            ${pattern.examples.map(example => `
-                            <div class="example p-2 border rounded">
-                                <ul class="list-disc list-inside">
-                                    <li>${example.en}・${example.ja}・${example.my}</li>
-                                </ul>
-                            </div>
-                            `).join('')}
-                        </div>
-
-                    </div>
-                    <p class="text-xs text-gray-500">Created At: ${pattern.created_at}</p>
+                const safeExamplesData = JSON.stringify(pattern.examples).replace(/"/g, '&quot;');
+                tableHTML += `
+                    <tr>
+                        <td class="p-2 border text-center">${pattern.level}</td>
+                        <td class="p-2 border text-center">
+                            <a href="${getBasePath()}admin/pattern/detail/?id=${pattern.id}" class="ml-2 text-blue-500 hover:underline">></a>
+                        </td>
+                        <td class="p-2 border">${pattern.title}</td>
+                        <td class="p-2 border">${pattern.formula}</td>
+                        <td class="p-2 border">${pattern.explanation.en}</td>
+                        <td class="p-2 border">${pattern.explanation.ja}</td>
+                        <td class="p-2 border">${pattern.explanation.my}</td>
+                        <td class="p-2 border">${pattern.created_at}</td>
+                    </tr>
+                        
                 `;
-                patternList.appendChild(patternItem);
             });     
+            tableHTML += `
+                        </tbody>
+                    </table>
+                </div>
+                `;
+            patternItem.innerHTML = tableHTML;
+            patternListContainer.appendChild(patternItem);
                 // renderPatterns(data.patterns);
                 // totalPages = data.totalPages;
                 // renderPagination();
@@ -64,4 +76,15 @@
         }
     };
     fetchPatterns(currentPage);
+
+    document.addEventListener('click', (event) => {
+        if (event.target && event.target.classList.contains('showExamplesBtn')) { 
+            console.log("Show Examples button clicked");
+            const patternId = event.target.getAttribute('data-id');
+            console.log("Pattern ID:", patternId);
+            window.location.href = `${getBasePath()}admin/pattern/detail?id=${patternId}`;
+        }
+    });
+
+
 </script>

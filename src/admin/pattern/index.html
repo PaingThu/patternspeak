@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PatternSpeak : Patterns</title>
+    <link rel="stylesheet" href="../../assets/style.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&family=Noto+Sans+JP:wght@400;700&family=Noto+Sans+Myanmar:wght@400;700&display=swap"
+        rel="stylesheet">
+</head>
+
+<body class="min-h-screen bg-primary">
+
+    {{> header }}
+    <main class="relative flex flex-col md:flex-row bg-white" id="mainContainer">
+        <div class="fixed w-full md:w-1/7">{{> sidenav }}</div>
+        <div class="ml-0 md:ml-[14.2857143%] content-container w-full h-full md:w-6/7 bg-white">
+            <div class="header h-[56px] px-6 flex items-center border-b border-slate-200 py-4">
+                <h1 class="text-2xl font-bold text-slate-800">English Speaking Patterns</h1>
+                <button id="createPatternBtn" class="ml-auto bg-primary hover:bg-primary-700 text-white py-2 px-4 rounded cursor-pointer text-sm">Create Pattern</button>
+            </div> 
+            <div id="patternForm" class="hidden content p-6 border border-slate-200 bg-white">
+                {{> patternForm }}
+            </div>
+            <div id="patternList" class="content p-6">
+                {{> patternList }}
+            </div>
+        </div>
+    </main>
+
+    <!-- Overlay & Sheet -->
+    <div id="modalOverlay"
+        class="hidden fixed inset-0 bg-black/80 backdrop-blur-md z-[80] transition-opacity duration-300 opacity-0">
+    </div>
+
+    <script type="module">
+        import { loadingSpinner, getBasePath, tokenCheck } from "/assets/js/config.js";
+        const createPatternBtn = document.getElementById('createPatternBtn');
+        const patternForm = document.getElementById('patternForm');
+
+        const init = async () => {
+            const isAuthenticated = await tokenCheck('list');
+            console.log("isAuthenticated: ", isAuthenticated);
+            if (!isAuthenticated) {
+                window.location.href = getBasePath() + "admin/login/";
+            }
+        };
+        init();
+
+        const handleCreatePattern = () => {
+            if (patternForm.classList.contains('hidden')) {
+                patternForm.classList.remove('hidden');
+                createPatternBtn.textContent = "Cancel";
+                createPatternBtn.classList.add('bg-gray-600', 'hover:bg-gray-700');
+                createPatternBtn.classList.remove('bg-primary', 'hover:bg-primary-700');
+            } else {
+                patternForm.classList.add('hidden');
+                createPatternBtn.textContent = "Create Pattern";
+                createPatternBtn.classList.add('bg-primary', 'hover:bg-primary-700');
+                createPatternBtn.classList.remove('bg-gray-600', 'hover:bg-gray-700');
+            }
+        };
+        createPatternBtn.addEventListener('click', handleCreatePattern);
+
+    </script>
+</body>
+
+</html>

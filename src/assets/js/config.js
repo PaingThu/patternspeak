@@ -75,9 +75,8 @@ export async function tokenCheck(pageType = 'login') {
             if (result.status === 'success') {
                 if (pageType === 'login') {
                     window.location.href = getBasePath() + "admin/";
-                }
-                if(pageType === 'admin'){
-                    return result;
+                }else{
+                    return true;
                 }
             } else {
                 deleteCookie("userToken");

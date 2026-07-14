@@ -1,11 +1,13 @@
 <!-- Navigation -->
-<nav class="glass-nav sticky top-0 z-[60] px-6 py-4 shadow-xl">
+<nav class="bg-white glass-nav sticky top-0 z-[60] px-6 py-4 shadow-xl">
     <div class="mx-auto flex justify-between items-center">
         <div class="flex items-center gap-3">
-            <div
-                class="w-12 h-12 rounded-full flex items-center justify-center shadow-lg shadow-blue-500/20">
-                <img id="logo-img" alt="" class="w-full h-full drop-shadow-md object-cover">
-            </div>
+            <a href="/admin/">
+                <div
+                    class="w-12 h-12 rounded-full flex items-center justify-center shadow-lg shadow-blue-500/20">
+                    <img id="logo-img" alt="" class="w-full h-full drop-shadow-md object-cover">
+                </div>
+            </a>
             <span class="text-secondary text-xl font-extrabold tracking-tight uppercase">LEARN <i
                     class="me-1 lowercase">through</i> <span class="text-primary"> EVERYTHING </span></span>
         </div>
@@ -20,6 +22,9 @@
 
 <script type="module">
     import { WEB_APP_URL, COMMON, tokenCheck, getBasePath, logo } from "/assets/js/config.js";
+
+    const logoElement = document.querySelector('#logo-img');
+    logoElement.src = logo;
     
     const el = {
         logoutBtn: document.getElementById('logoutBtn')

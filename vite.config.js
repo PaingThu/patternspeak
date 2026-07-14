@@ -23,7 +23,9 @@ export default defineConfig({
                 main: resolve(__dirname, 'src/index.html'),
                 admin: resolve(__dirname, 'src/admin/index.html'),
                 'admin/login': resolve(__dirname, 'src/admin/login/index.html'),
-                'admin/grammar': resolve(__dirname, 'src/admin/grammar/index.html')
+                'admin/grammar': resolve(__dirname, 'src/admin/grammar/index.html'),
+                'admin/pattern': resolve(__dirname, 'src/admin/pattern/index.html'),
+                'admin/pattern/detail': resolve(__dirname, 'src/admin/pattern/detail/index.html'),
             },
         },
     },

@@ -9,114 +9,21 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&family=Noto+Sans+JP:wght@400;700&family=Noto+Sans+Myanmar:wght@400;700&display=swap"
         rel="stylesheet">
-    <style>
-        /* :root {
-            --brand-primary: #3b82f6;
-            --brand-secondary: #a855f7;
-            --bg-dark: #09090b;
-            --card-bg: #18181b;
-        } */
-
-        body {
-            font-family: 'Plus Jakarta Sans', 'Noto Sans JP', 'Noto Sans Myanmar', sans-serif;
-            /* background-color: var(--bg-dark); */
-            /* color: #f4f4f5; */
-            -webkit-tap-highlight-color: transparent;
-        }
-
-        /* Glassmorphism & Effects */
-        .glass-nav {
-            background: white;
-            backdrop-filter: blur(12px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-        }
-
-        .bento-card {
-            background: var(--card-bg);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .bento-card:hover {
-            border-color: rgba(59, 130, 246, 0.3);
-            transform: translateY(-2px);
-            box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
-        }
-
-        /* Interactive Lyrics */
-        .lyric-line {
-            padding: 6px 12px;
-            margin: 2px -12px;
-            border-radius: 10px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            display: block;
-            width: fit-content;
-            white-space: pre-wrap;
-        }
-
-        .lyric-line:hover {
-            background: rgba(59, 130, 246, 0.08);
-            color: #f4f4f5;
-        }
-
-        .lyric-line.active {
-            background: rgba(59, 130, 246, 0.15);
-            color: #60a5fa;
-            font-weight: 600;
-            box-shadow: 0 0 20px rgba(59, 130, 246, 0.05);
-        }
-
-        /* Sheet Animation */
-        .sheet-transition {
-            transition: transform 0.5s cubic-bezier(0.32, 0.72, 0, 1);
-        }
-
-        .sheet-hidden {
-            transform: translateY(105%);
-        }
-
-        .gradient-text {
-            background: linear-gradient(135deg, #60a5fa 0%, #c084fc 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar {
-            width: 6px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: var(--bg-dark);
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: #27272a;
-            border-radius: 10px;
-        }
-
-        .vocab-list::-webkit-scrollbar {
-            width: 4px;
-        }
-    </style>
 </head>
 
-<body class="min-h-screen bg-primary">
+<body class="min-h-screen">
 
     {{> header }}
     <main class="relative flex flex-col md:flex-row bg-white" id="mainContainer">
         <div class="fixed w-full md:w-1/7">{{> sidenav }}</div>
-        <div class="ml-0 md:ml-[14.2857143%] content-container w-full h-full md:w-6/7 bg-white shadow-xl border border-slate-200">
-            <div class="header h-[56px] px-6 flex items-center border-b border-slate-200">
-                <h1 class="text-2xl font-bold text-slate-800">English Speaking Patterns</h1>
-                <button id="createPatternBtn" class="ml-auto bg-primary hover:bg-primary-700 text-white py-2 px-4 rounded cursor-pointer">Create Pattern</button>
-            </div> 
-            <div id="patternForm" class="hidden content p-6 border border-slate-200 bg-white">
-                {{> patternForm }}
-            </div>
-            <div id="patternList" class="content p-6">
-                {{> patternList }}
+        <div class="ml-0 md:ml-[14.2857143%] content-container w-full h-full md:w-6/7">
+            <div class="flex flex-col items-center justify-center gap-6 p-6 h-full w-full bg-white">
+                <div
+                    class="mt-6 w-50 h-50 rounded-full flex items-center justify-center shadow-lg shadow-blue-500/20">
+                    <img id="content-logo" alt="" class="w-full h-full drop-shadow-md object-cover animate-bounce">
+                </div>
+                <span class="text-secondary text-4xl font-extrabold tracking-tight uppercase">LEARN <i
+                        class="me-1 lowercase">through</i> <span class="text-primary"> EVERYTHING </span></span>
             </div>
         </div>
     </main>
@@ -126,7 +33,22 @@
         class="hidden fixed inset-0 bg-black/80 backdrop-blur-md z-[80] transition-opacity duration-300 opacity-0">
     </div>
 
-    <script type="module" src="../assets/js/admin.js"></script>
+    <!-- <script type="module" src="../assets/js/admin.js"></script> -->
+    <script type="module">
+        import { tokenCheck, getBasePath, logo } from "../assets/js/config.js";
+        const logoImg = document.getElementById("content-logo");
+        logoImg.src = logo;
+
+        const init = async () => {
+            const isAuthenticated = await tokenCheck('admin');
+            console.log("isAuthenticated: ", isAuthenticated);
+            if (!isAuthenticated) {
+                window.location.href = getBasePath() + "admin/login/";
+            }
+        };
+        init();
+
+    </script>
 </body>
 
 </html>
